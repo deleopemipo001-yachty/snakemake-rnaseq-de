@@ -7,15 +7,15 @@ rule fastqc:
         zip="results/fastqc/{sample}_{read}_fastqc.zip",
     log:
         "logs/fastqc/{sample}_{read}.log",
+    conda:
+        "../envs/fastqc.yaml"
     threads: 1
     resources:
         mem_mb=1000,
-    conda:
-        "../envs/fastqc.yaml"
     shell:
         "tmpdir=$(mktemp -d results/fastqc/.fastqc.XXXXXX); "
         "trap 'rm -rf \"$tmpdir\"' EXIT; "
-        "fastqc --threads {threads} --outdir \"$tmpdir\" {input.fastq} > {log} 2>&1 && "
+        'fastqc --threads {threads} --outdir "$tmpdir" {input.fastq} > {log} 2>&1 && '
         "find \"$tmpdir\" -name '*_fastqc.html' -exec mv {{}} {output.html} ';' && "
         "find \"$tmpdir\" -name '*_fastqc.zip' -exec mv {{}} {output.zip} ';'"
 
@@ -32,11 +32,11 @@ rule fastp:
         json="results/fastp/{sample}.json",
     log:
         "logs/fastp/{sample}.log",
+    conda:
+        "../envs/fastp.yaml"
     threads: config["fastp"]["threads"]
     resources:
         mem_mb=3000,
-    conda:
-        "../envs/fastp.yaml"
     shell:
         "fastp --detect_adapter_for_pe --thread {threads} "
         "--in1 {input.r1} --in2 {input.r2} "
@@ -47,16 +47,22 @@ rule fastp:
 # Combine per-read FastQC and per-sample fastp reports into one summary page.
 rule multiqc:
     input:
-        expand("results/fastqc/{sample}_{read}_fastqc.zip", sample=samples.index, read=["R1", "R2"]),
-        expand("results/fastp/{sample}.{ext}", sample=samples.index, ext=["html", "json"]),
+        expand(
+            "results/fastqc/{sample}_{read}_fastqc.zip",
+            sample=samples.index,
+            read=["R1", "R2"],
+        ),
+        expand(
+            "results/fastp/{sample}.{ext}", sample=samples.index, ext=["html", "json"]
+        ),
     output:
         report="results/multiqc/multiqc_report.html",
     log:
         "logs/multiqc/multiqc.log",
+    conda:
+        "../envs/multiqc.yaml"
     threads: 1
     resources:
         mem_mb=2000,
-    conda:
-        "../envs/multiqc.yaml"
     shell:
         "multiqc results/fastqc results/fastp --outdir results/multiqc > {log} 2>&1"

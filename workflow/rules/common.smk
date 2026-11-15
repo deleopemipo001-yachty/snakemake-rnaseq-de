@@ -1,7 +1,6 @@
 import pandas as pd
 from snakemake.utils import validate
 
-
 # Validate settings and metadata before any workflow rules are scheduled.
 validate(config, "../schemas/config.schema.yaml")
 samples = pd.read_csv(config["sample_sheet"], sep="\t", dtype=str)

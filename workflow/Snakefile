@@ -1,6 +1,7 @@
 # Main entry point for the workflow.
 configfile: "config/config.yaml"
 
+
 include: "rules/common.smk"
 include: "rules/qc.smk"
 
