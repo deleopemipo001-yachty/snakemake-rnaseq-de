@@ -1,3 +1,3 @@
-sample	condition	replicate	read1	read2
-sample1	wild_type	1	sample1.bwa.read1.fastq.gz	sample1.bwa.read2.fastq.gz
-sample2	wild_type	2	sample2.bwa.read1.fastq.gz	sample2.bwa.read2.fastq.gz
+sample	patient	condition	run	fq1	fq2
+test_T	test	tumor	SRR10733633	data/test_T_R1.fastq.gz	data/test_T_R2.fastq.gz
+test_N	test	normal	SRR10733632	data/test_N_R1.fastq.gz	data/test_N_R2.fastq.gz
