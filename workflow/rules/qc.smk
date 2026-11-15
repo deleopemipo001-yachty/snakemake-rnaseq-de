@@ -13,7 +13,11 @@ rule fastqc:
     conda:
         "../envs/fastqc.yaml"
     shell:
-        "fastqc --threads {threads} --outdir results/fastqc {input.fastq} > {log} 2>&1"
+        "tmpdir=$(mktemp -d results/fastqc/.fastqc.XXXXXX); "
+        "trap 'rm -rf \"$tmpdir\"' EXIT; "
+        "fastqc --threads {threads} --outdir \"$tmpdir\" {input.fastq} > {log} 2>&1 && "
+        "find \"$tmpdir\" -name '*_fastqc.html' -exec mv {{}} {output.html} ';' && "
+        "find \"$tmpdir\" -name '*_fastqc.zip' -exec mv {{}} {output.zip} ';'"
 
 
 # Trim paired reads with fastp's defaults and automatic paired-end adapter detection.
