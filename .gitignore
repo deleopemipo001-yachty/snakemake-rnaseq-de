@@ -1,11 +1,15 @@
 results/**
 resources/**
 logs/**
+/data/**
 .snakemake
 .snakemake/**
 .test/results/**
 .test/logs/**
 .test/resources/**
+.test/data/sra/**
+.test/data/fastq/**
+.test/data/tmp/**
 .test/.snakemake/**
 workflow/notebooks/.ipynb_checkpoints/**
 **/.Rhistory

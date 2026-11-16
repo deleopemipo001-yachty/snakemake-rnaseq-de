@@ -17,7 +17,7 @@ if ref_config["mode"] == "download":
     # Download and extract the configured HISAT2 archive; keep it if any step fails.
     rule download_hisat2_index:
         output:
-            directory(index_directory),
+            protected(directory(index_directory)),
         log:
             "logs/reference/hisat2_index.log",
         conda:
@@ -38,7 +38,7 @@ if ref_config["mode"] == "download":
     # Download the configured Ensembl annotation and retain its compressed source file.
     rule download_gtf:
         output:
-            gtf=gtf_path,
+            gtf=protected(gtf_path),
         log:
             "logs/reference/gtf.log",
         conda:

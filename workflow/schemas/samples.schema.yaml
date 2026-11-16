@@ -15,9 +15,7 @@ properties:
     minLength: 1
   fq1:
     type: string
-    minLength: 1
   fq2:
     type: string
-    minLength: 1
-required: [sample, patient, condition, run, fq1, fq2]
+required: [sample, patient, condition, run]
 additionalProperties: false
