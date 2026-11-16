@@ -17,7 +17,11 @@ if inspection.returncode:
     log_path.write_text(message + "\n")
     raise Exception(message)
 
-index_names = set(inspection.stdout.splitlines())
+index_names = {
+    line.split(maxsplit=1)[0]
+    for line in inspection.stdout.splitlines()
+    if line.split(maxsplit=1)
+}
 open_gtf = gzip.open if snakemake.input.gtf.endswith(".gz") else open
 gtf_names = set()
 with open_gtf(snakemake.input.gtf, "rt") as gtf_file:
