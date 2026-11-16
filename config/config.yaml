@@ -3,3 +3,10 @@ sample_sheet: "config/samples.tsv"
 # These settings control compute use only; fastp uses its defaults otherwise.
 fastp:
   threads: 2
+
+ref:
+  mode: "download"
+  hisat2_index_url: "https://genome-idx.s3.amazonaws.com/hisat/grch38_genome.tar.gz"
+  hisat2_index_prefix: "grch38/genome"
+  gtf_url: "https://ftp.ensembl.org/pub/release-116/gtf/homo_sapiens/Homo_sapiens.GRCh38.116.gtf.gz"
+  ensembl_release: 116

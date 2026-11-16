@@ -13,5 +13,52 @@ properties:
         maximum: 4
     required: [threads]
     additionalProperties: false
-required: [sample_sheet, fastp]
+  ref:
+    type: object
+    properties:
+      mode:
+        type: string
+        enum: [download, local]
+      hisat2_index_url:
+        type: string
+        format: uri
+      hisat2_index_prefix:
+        type: string
+        minLength: 1
+      gtf_url:
+        type: string
+        format: uri
+      ensembl_release:
+        type: integer
+        minimum: 1
+      fasta:
+        type: string
+        minLength: 1
+      gtf:
+        type: string
+        minLength: 1
+    required:
+      - mode
+      - hisat2_index_url
+      - hisat2_index_prefix
+      - gtf_url
+      - ensembl_release
+    additionalProperties: false
+    allOf:
+      - if:
+          properties:
+            mode:
+              const: local
+        then:
+          required: [fasta, gtf]
+      - if:
+          properties:
+            mode:
+              const: download
+        then:
+          not:
+            anyOf:
+              - required: [fasta]
+              - required: [gtf]
+required: [sample_sheet, fastp, ref]
 additionalProperties: false
