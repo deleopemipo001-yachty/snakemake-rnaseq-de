@@ -11,3 +11,6 @@ ref:
   ensembl_release: 116
   fasta: "data/test_reference.fa"
   gtf: "data/test_annotation.gtf"
+
+featurecounts:
+  strandedness: 0 # test only

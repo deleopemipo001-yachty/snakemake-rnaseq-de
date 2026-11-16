@@ -60,5 +60,13 @@ properties:
             anyOf:
               - required: [fasta]
               - required: [gtf]
-required: [sample_sheet, fastp, ref]
+  featurecounts:
+    type: object
+    properties:
+      strandedness:
+        type: [integer, "null"]
+        enum: [0, 1, 2, null]
+    required: [strandedness]
+    additionalProperties: false
+required: [sample_sheet, fastp, ref, featurecounts]
 additionalProperties: false

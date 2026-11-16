@@ -5,6 +5,7 @@ logs/**
 .snakemake/**
 .test/results/**
 .test/logs/**
+.test/resources/**
 .test/.snakemake/**
 workflow/notebooks/.ipynb_checkpoints/**
 **/.Rhistory

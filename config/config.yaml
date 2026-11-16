@@ -10,3 +10,6 @@ ref:
   hisat2_index_prefix: "grch38/genome"
   gtf_url: "https://ftp.ensembl.org/pub/release-116/gtf/homo_sapiens/Homo_sapiens.GRCh38.116.gtf.gz"
   ensembl_release: 116
+
+featurecounts:
+  strandedness: null # TODO: run the strandedness check, then set 0, 1, or 2.

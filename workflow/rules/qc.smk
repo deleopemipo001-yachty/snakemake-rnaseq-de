@@ -26,8 +26,8 @@ rule fastp:
         r1=lambda wildcards: sample_fastq(wildcards.sample, "R1"),
         r2=lambda wildcards: sample_fastq(wildcards.sample, "R2"),
     output:
-        r1="results/trimmed/{sample}_R1.fastq.gz",
-        r2="results/trimmed/{sample}_R2.fastq.gz",
+        r1=temp("results/trimmed/{sample}_R1.fastq.gz"),
+        r2=temp("results/trimmed/{sample}_R2.fastq.gz"),
         html="results/fastp/{sample}.html",
         json="results/fastp/{sample}.json",
     log:
@@ -55,6 +55,9 @@ rule multiqc:
         expand(
             "results/fastp/{sample}.{ext}", sample=samples.index, ext=["html", "json"]
         ),
+        expand("logs/hisat2/{sample}.summary.txt", sample=samples.index),
+        expand("results/qc/flagstat/{sample}.flagstat", sample=samples.index),
+        "results/counts/counts.txt.summary",
     output:
         report="results/multiqc/multiqc_report.html",
     log:
@@ -65,4 +68,4 @@ rule multiqc:
     resources:
         mem_mb=2000,
     shell:
-        "multiqc results/fastqc results/fastp --outdir results/multiqc > {log} 2>&1"
+        "multiqc {input:q} --outdir results/multiqc > {log} 2>&1"

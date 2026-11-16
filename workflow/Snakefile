@@ -5,6 +5,8 @@ configfile: "config/config.yaml"
 include: "rules/common.smk"
 include: "rules/qc.smk"
 include: "rules/ref.smk"
+include: "rules/align.smk"
+include: "rules/count.smk"
 
 
 # Build the requested MultiQC report from all configured samples.
@@ -12,3 +14,5 @@ rule all:
     default_target: True
     input:
         "results/multiqc/multiqc_report.html",
+        "results/counts/counts.txt",
+        "results/qc/chrom_names.txt",
