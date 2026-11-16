@@ -4,7 +4,8 @@
 A reproducible, containerized Snakemake pipeline for paired-end bulk RNA-Seq:
 raw reads → QC/trimming → HISAT2 alignment → featureCounts → DESeq2 (paired design)
 → pathway enrichment → report. First test case: GSE142279 (colorectal tumor vs matched normal).
-It must be reusable: anyone runs it on their own data by editing config files only.
+7. Never run large downloads or the full dataset yourself. You may WRITE rules that download
+   reference files, but only I run them. Test only on .test/.
 
 ## Hardware limits
 Runs on a laptop: 4 CPU threads, ~11 GB RAM (WSL2). Never request more than 4 threads
@@ -38,3 +39,10 @@ or more than 10000 mem_mb for any rule.
 10. Do NOT commit or push. I review, run and commit everything myself.
 11. Before finishing, make sure `snakemake --lint` passes and the .test dry run works.
     End every reply with: files changed, and the exact commands I should run to verify.
+12. Run `snakefmt workflow/` before finishing every task, and make sure `snakefmt --check workflow/` passes.
+13. temp() policy: delete only what can be rebuilt WITHOUT internet. Trimmed FASTQs and
+    FASTQs converted from .sra -> temp(). Downloaded files (.sra, reference index, GTF) and
+    the user's own input FASTQs -> never temp(); downloaded .sra files -> protected().
+14. Reference files: URLs and versions live only in config. Downloads use curl with retries and
+    resume (-C -) so an interrupted download continues instead of restarting. .test/ must never
+    download the real reference; it uses a tiny local reference instead.
