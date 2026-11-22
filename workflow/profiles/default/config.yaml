@@ -1,0 +1,6 @@
+software-deployment-method: conda
+rerun-triggers:
+  - mtime
+  - input
+  - params
+  - code

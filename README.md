@@ -12,6 +12,8 @@ Run the workflow with:
 snakemake --cores 4 --sdm conda
 ```
 
+Environment changes do not trigger re-runs automatically. After deliberately changing a tool version, re-run the affected rules with `--forcerun <rule>`.
+
 The test configuration and tiny FASTQ files are in `.test/`. Check the workflow plan with:
 
 ```bash
