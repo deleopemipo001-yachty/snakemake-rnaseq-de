@@ -13,7 +13,9 @@ rule prefetch_sra:
     resources:
         mem_mb=1000,
     params:
-        output_dir=lambda wildcards, output: os.path.dirname(output.sra),
+        output_dir=lambda wildcards, output: os.path.dirname(
+            os.path.dirname(output.sra)
+        ),
     shell:
         "mkdir -p {params.output_dir:q} && "
         "for attempt in 1 2 3; do "

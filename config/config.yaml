@@ -12,4 +12,4 @@ ref:
   ensembl_release: 116
 
 featurecounts:
-  strandedness: null # TODO: run the strandedness check, then set 0, 1, or 2.
+  strandedness: 0 # Confirmed unstranded from RC1_T (SRR10733633): -s0 69.19%, -s1 43.70%, -s2 43.64%
