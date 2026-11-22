@@ -3,6 +3,7 @@ rule align:
     input:
         r1="results/trimmed/{sample}_R1.fastq.gz",
         r2="results/trimmed/{sample}_R2.fastq.gz",
+        index=index_directory,
         chrom_names="results/qc/chrom_names.txt",
     output:
         bam="results/bam/{sample}.bam",
@@ -19,6 +20,10 @@ rule align:
     params:
         index_prefix=index_prefix,
     shell:
+        "if [ ! -f {params.index_prefix:q}.1.ht2 ] && "
+        "[ ! -f {params.index_prefix:q}.1.ht2l ]; then "
+        "echo 'HISAT2 index files are missing for prefix {params.index_prefix}; "
+        "expected .1.ht2 or .1.ht2l.' >&2; exit 1; fi && "
         "hisat2 -p {threads} --new-summary --summary-file {output.summary:q} "
         "-x {params.index_prefix:q} -1 {input.r1:q} -2 {input.r2:q} "
         "2> {log.align:q} | "
