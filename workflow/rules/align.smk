@@ -12,6 +12,7 @@ rule align:
     log:
         align="logs/hisat2/{sample}.align.log",
         sort="logs/hisat2/{sample}.sort.log",
+    priority: 10
     conda:
         "../envs/alignment.yaml"
     threads: 4

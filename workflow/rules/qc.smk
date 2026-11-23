@@ -7,6 +7,7 @@ rule fastqc:
         zip="results/fastqc/{sample}_{read}_fastqc.zip",
     log:
         "logs/fastqc/{sample}_{read}.log",
+    priority: 0
     conda:
         "../envs/fastqc.yaml"
     threads: 1
@@ -32,6 +33,7 @@ rule fastp:
         json="results/fastp/{sample}.json",
     log:
         "logs/fastp/{sample}.log",
+    priority: 5
     conda:
         "../envs/fastp.yaml"
     threads: config["fastp"]["threads"]
@@ -44,20 +46,42 @@ rule fastp:
         "--html {output.html} --json {output.json} > {log} 2>&1"
 
 
+# Build the sample-name replacements that make run-based QC names readable.
+rule multiqc_sample_name_map:
+    input:
+        config["sample_sheet"],
+    output:
+        "results/multiqc/sample_name_map.tsv",
+    log:
+        "logs/multiqc/sample_name_map.log",
+    conda:
+        "../envs/multiqc.yaml"
+    threads: 1
+    resources:
+        mem_mb=1000,
+    script:
+        "../scripts/make_multiqc_name_map.py"
+
+
 # Combine per-read FastQC and per-sample fastp reports into one summary page.
 rule multiqc:
     input:
-        expand(
-            "results/fastqc/{sample}_{read}_fastqc.zip",
-            sample=samples.index,
-            read=["R1", "R2"],
+        name_map="results/multiqc/sample_name_map.tsv",
+        reports=(
+            expand(
+                "results/fastqc/{sample}_{read}_fastqc.zip",
+                sample=samples.index,
+                read=["R1", "R2"],
+            )
+            + expand(
+                "results/fastp/{sample}.{ext}",
+                sample=samples.index,
+                ext=["html", "json"],
+            )
+            + expand("logs/hisat2/{sample}.summary.txt", sample=samples.index)
+            + expand("results/qc/flagstat/{sample}.flagstat", sample=samples.index)
+            + ["results/counts/counts.txt.summary"]
         ),
-        expand(
-            "results/fastp/{sample}.{ext}", sample=samples.index, ext=["html", "json"]
-        ),
-        expand("logs/hisat2/{sample}.summary.txt", sample=samples.index),
-        expand("results/qc/flagstat/{sample}.flagstat", sample=samples.index),
-        "results/counts/counts.txt.summary",
     output:
         report="results/multiqc/multiqc_report.html",
     log:
@@ -68,4 +92,8 @@ rule multiqc:
     resources:
         mem_mb=2000,
     shell:
-        "multiqc {input:q} --outdir results/multiqc > {log} 2>&1"
+        "tmpdir=$(mktemp -d results/multiqc/.multiqc.XXXXXX); "
+        "trap 'rm -rf \"$tmpdir\"' EXIT; "
+        'multiqc --replace-names {input.name_map:q} --outdir "$tmpdir" '
+        "--filename multiqc_report.html {input.reports:q} > {log:q} 2>&1 && "
+        'mv "$tmpdir/multiqc_report.html" {output.report:q}'

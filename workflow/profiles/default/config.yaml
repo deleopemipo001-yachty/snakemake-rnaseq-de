@@ -1,4 +1,6 @@
 software-deployment-method: conda
+cores: 4
+resources: mem_mb=10000
 rerun-triggers:
   - mtime
   - input

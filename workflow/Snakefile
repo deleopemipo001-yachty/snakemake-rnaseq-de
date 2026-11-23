@@ -16,4 +16,5 @@ rule all:
     input:
         "results/multiqc/multiqc_report.html",
         "results/counts/counts.txt",
+        "results/counts/counts_matrix.tsv",
         "results/qc/chrom_names.txt",

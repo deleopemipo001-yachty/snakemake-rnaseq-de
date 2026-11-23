@@ -54,6 +54,7 @@ rule fasterq_dump:
         r2=temp("data/fastq/{run}_2.fastq"),
     log:
         "logs/sra/fasterq_dump/{run}.log",
+    priority: 0
     conda:
         "../envs/sra-tools.yaml"
     threads: 4
