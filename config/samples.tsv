@@ -1,3 +1,5 @@
 sample	patient	condition	run	fq1	fq2
 RC1_T	RC1	tumor	SRR10733633		
 RC1_N	RC1	normal	SRR10733632		
+RC2_N	RC2	normal	SRR10733634		
+RC2_T	RC2	tumor	SRR10733635		
