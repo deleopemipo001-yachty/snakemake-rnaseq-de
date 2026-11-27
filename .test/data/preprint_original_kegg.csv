@@ -1,0 +1,10 @@
+Description,p.adjust
+Cell cycle,0.01
+p53 signaling pathway,0.02
+DNA replication,0.03
+Cytokine-cytokine receptor interaction,0.04
+Progesterone-mediated oocyte maturation,0.05
+Hematopoietic cell lineage,0.06
+Nitrogen metabolism,0.07
+Cell adhesion molecules,0.08
+A made up pathway,0.9

@@ -4,6 +4,7 @@ suppressPackageStartupMessages({
   library(ggplot2)
   library(msigdbr)
 })
+source(snakemake@input[["ora_functions"]])
 
 all_genes <- read.delim(
   snakemake@input[["all_genes"]],
@@ -34,9 +35,6 @@ if (!all(c("gene_id", "gene_name") %in% colnames(annotation))) {
   stop("Gene annotation must contain gene_id and gene_name.", call. = FALSE)
 }
 
-normalise_gene_id <- function(gene_id) {
-  sub("\\.[0-9]+$", "", as.character(gene_id))
-}
 universe <- unique(normalise_gene_id(all_genes$gene_id))
 universe <- universe[!is.na(universe) & universe != ""]
 if (length(universe) == 0) {
@@ -85,38 +83,6 @@ if (use_ensembl_ids) {
   ]
 }
 
-make_gene_sets <- function(data) {
-  term_id <- if ("gs_id" %in% colnames(data)) {
-    as.character(data$gs_id)
-  } else {
-    as.character(data$gs_name)
-  }
-  description <- if ("gs_description" %in% colnames(data)) {
-    as.character(data$gs_description)
-  } else {
-    as.character(data$gs_name)
-  }
-  long_description <- description
-  description <- as.character(data$gs_name)
-  missing_long_description <- is.na(long_description) | long_description == ""
-  long_description[missing_long_description] <- description[missing_long_description]
-  mapping <- data.frame(
-    ID = term_id,
-    Description = description,
-    Long_description = long_description,
-    gene = as.character(data$analysis_gene_id),
-    stringsAsFactors = FALSE
-  )
-  mapping <- mapping[
-    !is.na(mapping$ID) & mapping$ID != "" &
-      !is.na(mapping$gene) & mapping$gene != "" &
-      mapping$gene %in% universe,
-    ,
-    drop = FALSE
-  ]
-  dplyr::distinct(mapping)
-}
-
 empty_table <- function() {
   data.frame(
     ID = character(),
@@ -161,84 +127,33 @@ run_one <- function(collection, direction) {
   } else {
     msig[msig$gs_cat == "H", , drop = FALSE]
   }
-  gene_sets <- make_gene_sets(category_data)
-  if (nrow(gene_sets) > 0) {
-    sizes <- vapply(
-      split(gene_sets$gene, gene_sets$ID),
-      function(genes) length(unique(genes)),
-      integer(1)
-    )
-    eligible_ids <- names(sizes)[
-      sizes >= minimum_set_size & sizes <= maximum_set_size
-    ]
-    gene_sets <- gene_sets[gene_sets$ID %in% eligible_ids, , drop = FALSE]
-  }
-  collection_universe <- intersect(universe, unique(gene_sets$gene))
-  query <- unique(normalise_gene_id(degs$gene_id[degs$direction == direction]))
-  query <- intersect(query[!is.na(query) & query != ""], collection_universe)
-  number_tested <- length(query)
-  number_universe <- length(collection_universe)
-
-  tested_terms <- data.frame()
-  if (number_tested > 0 && nrow(gene_sets) > 0) {
-    term_ids <- unique(gene_sets$ID)
-    rows <- lapply(term_ids, function(term_id) {
-      term <- gene_sets[gene_sets$ID == term_id, , drop = FALSE]
-      term_genes <- unique(term$gene)
-      set_size <- length(term_genes)
-      overlap <- intersect(query, term_genes)
-      overlap_count <- length(overlap)
-      if (overlap_count == 0) {
-        return(NULL)
-      }
-      pvalue <- stats::phyper(
-        overlap_count - 1,
-        set_size,
-        number_universe - set_size,
-        number_tested,
-        lower.tail = FALSE
-      )
-      gene_names <- annotation_names$gene_name[
-        match(overlap, annotation_names$gene_id)
-      ]
-      missing_names <- is.na(gene_names) | gene_names == ""
-      gene_names[missing_names] <- overlap[missing_names]
-      data.frame(
-        ID = term_id,
-        Description = term$Description[[1]],
-        Long_description = term$Long_description[[1]],
-        GeneRatio = paste0(overlap_count, "/", number_tested),
-        BgRatio = paste0(set_size, "/", number_universe),
-        pvalue = pvalue,
-        geneID = paste(gene_names, collapse = "/"),
-        Count = as.integer(overlap_count),
-        stringsAsFactors = FALSE
-      )
-    })
-    rows <- Filter(Negate(is.null), rows)
-    if (length(rows) > 0) {
-      tested_terms <- do.call(rbind, rows)
-      tested_terms$p.adjust <- stats::p.adjust(tested_terms$pvalue, method = "BH")
-      tested_terms <- tested_terms[
-        order(tested_terms$p.adjust, tested_terms$pvalue),
-        ,
-        drop = FALSE
-      ]
-    }
-  }
+  gene_sets <- make_ora_gene_sets(category_data, universe)
+  query <- degs$gene_id[degs$direction == direction]
+  tested_terms <- run_ora(
+    query,
+    gene_sets,
+    universe,
+    annotation_names,
+    minimum_set_size,
+    maximum_set_size
+  )
 
   significant_results <- empty_table()
   if (nrow(tested_terms) > 0) {
+    tested_terms$significant <- !is.na(tested_terms$p.adjust) & tested_terms$p.adjust < padj_threshold
     significant_results <- tested_terms[
-      !is.na(tested_terms$p.adjust) & tested_terms$p.adjust < padj_threshold,
-      c("ID", "Description", "Long_description", "GeneRatio", "BgRatio", "pvalue", "p.adjust", "geneID", "Count"),
+      tested_terms$significant,
+      c("ID", "Description", "Long_description", "GeneRatio", "BgRatio", "pvalue", "p.adjust", "geneID", "Count", "significant"),
       drop = FALSE
     ]
+    tested_terms$significant <- !is.na(tested_terms$p.adjust) & tested_terms$p.adjust < padj_threshold
+  } else {
+    tested_terms$significant <- logical()
   }
 
   table_path <- snakemake@output[[paste0(collection, "_", direction)]]
   write.table(
-    significant_results,
+    tested_terms,
     table_path,
     sep = "\t",
     quote = FALSE,

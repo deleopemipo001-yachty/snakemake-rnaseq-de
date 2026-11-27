@@ -46,3 +46,8 @@ def require_featurecounts_strandedness(wildcards):
             "percentages, then set featurecounts.strandedness to 0, 1, or 2."
         )
     return strandedness
+
+
+def optional_preprint_file(path):
+    """Return a configured optional preprint input, or an empty list."""
+    return path if path else []

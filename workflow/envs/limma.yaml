@@ -1,0 +1,12 @@
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  # Original preprint used limma 3.64.3 (R 4.5.1, installed via BiocManager); 3.64.x is not on Bioconda, so 3.66.0 is the closest R 4.5 build. Equivalence is verified gene-by-gene against the original output in reproduction_check.tsv.
+  - r-base=4.5.3
+  - bioconductor-limma=3.66.0
+  - r-dplyr=1.2.1
+  - r-ggplot2=4.0.4
+  - r-readr=2.2.0
+  - r-stringr=1.6.0
+  - r-tibble=3.3.1

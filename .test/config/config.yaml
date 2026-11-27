@@ -30,5 +30,22 @@ de:
 
 enrichment:
   padj: 0.05
-  min_size: 10
+  min_size: 1
   max_size: 500
+
+# Tiny local fixtures for the preprint reproduction branch.
+preprint:
+  fpkm: "data/preprint_fpkm.tsv" # Synthetic tab-separated expression matrix.
+  series_matrix: "data/preprint_series_matrix.txt.gz" # Synthetic GSM metadata fixture.
+  original_degs: "data/preprint_original_degs.csv" # Synthetic original DEG comparison table.
+  original_kegg: "data/preprint_original_kegg.csv" # Synthetic original KEGG comparison table.
+  kegg_aliases:
+    "cell adhesion molecules": "KEGG_CELL_ADHESION_MOLECULES_CAMS" # Exercise the known KEGG pathway rename alias.
+  samples: [RC1_N, RC1_T, RC2_N, RC2_T] # Explicit fixture sample columns; two other columns are excluded.
+  min_mean_log2: 0 # Keep genes in this small fixture.
+  padj: 0.05 # Fixture significance threshold.
+  lfc: 0.1 # Fixture fold-change threshold.
+  expected_genes: 4 # Expected retained fixture genes.
+  expected_degs: 3 # Observed in the four-gene fixture.
+  expected_up: 2 # Observed in the four-gene fixture.
+  expected_down: 1 # Observed in the four-gene fixture.

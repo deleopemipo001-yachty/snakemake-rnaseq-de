@@ -4,6 +4,7 @@ rule pathway_enrichment:
         all_genes="results/deseq2/all_genes.tsv",
         degs="results/deseq2/degs.tsv",
         annotation="results/deseq2/gene_annotation.tsv",
+        ora_functions=ora_functions_path,
     output:
         kegg_up="results/enrichment/kegg_up.tsv",
         kegg_down="results/enrichment/kegg_down.tsv",

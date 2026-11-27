@@ -22,6 +22,8 @@ if sensitivity_excluded_patients:
         for extension in ["png", "pdf"]
     ]
 
+ora_functions_path = f"{workflow.basedir}/scripts/ora_functions.R"
+
 
 include: "rules/common.smk"
 include: "rules/sra.smk"
@@ -31,6 +33,7 @@ include: "rules/align.smk"
 include: "rules/count.smk"
 include: "rules/deseq2.smk"
 include: "rules/enrichment.smk"
+include: "rules/preprint.smk"
 
 
 # Build the requested MultiQC report from all configured samples.
