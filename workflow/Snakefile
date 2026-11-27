@@ -25,3 +25,15 @@ rule all:
         "results/deseq2/dds.rds",
         "results/deseq2/vst.rds",
         "results/deseq2/session_info.txt",
+        expand(
+            "results/figures/{name}.{extension}",
+            name=[
+                "pca",
+                "pca_patient_adjusted",
+                "sample_distances",
+                "ma_plot",
+                "volcano",
+                "heatmap_top50",
+            ],
+            extension=["png", "pdf"],
+        ),
