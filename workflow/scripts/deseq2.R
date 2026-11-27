@@ -14,6 +14,7 @@ min_count <- as.integer(snakemake@params[["min_count"]])
 min_samples <- as.integer(snakemake@params[["min_samples"]])
 padj_threshold <- as.numeric(snakemake@params[["padj"]])
 lfc_threshold <- as.numeric(snakemake@params[["lfc"]])
+excluded_patients <- as.character(snakemake@params[["exclude_patients"]])
 
 counts_table <- read.delim(counts_path, check.names = FALSE, stringsAsFactors = FALSE)
 if (ncol(counts_table) < 2 || colnames(counts_table)[[1]] != "gene_id") {
@@ -56,7 +57,22 @@ if (length(missing_samples) > 0 || length(extra_samples) > 0) {
   )
 }
 
-count_values <- as.matrix(counts_table[, sheet_samples, drop = FALSE])
+missing_excluded <- setdiff(excluded_patients, as.character(sample_table[[patient_column]]))
+if (length(missing_excluded) > 0) {
+  stop(
+    paste("Excluded patients are absent from the DE sample sheet:", paste(missing_excluded, collapse = ", ")),
+    call. = FALSE
+  )
+}
+if (length(excluded_patients) > 0) {
+  sample_table <- sample_table[!sample_table[[patient_column]] %in% excluded_patients, , drop = FALSE]
+  if (nrow(sample_table) == 0) {
+    stop("Excluding the configured patients leaves no DE samples.", call. = FALSE)
+  }
+}
+
+selected_samples <- as.character(sample_table$sample)
+count_values <- as.matrix(counts_table[, selected_samples, drop = FALSE])
 storage.mode(count_values) <- "numeric"
 if (anyNA(count_values) || any(!is.finite(count_values)) || any(count_values < 0)) {
   stop("The count matrix must contain finite, non-negative counts.", call. = FALSE)
@@ -179,6 +195,10 @@ summary <- data.frame(
   lfc_threshold = lfc_threshold
 )
 write.table(summary, output_paths[["summary"]], sep = "\t", quote = FALSE, row.names = FALSE)
-saveRDS(dds, output_paths[["dds"]])
-saveRDS(vst(dds, blind = FALSE), output_paths[["vst"]])
+if ("dds" %in% names(output_paths)) {
+  saveRDS(dds, output_paths[["dds"]])
+}
+if ("vst" %in% names(output_paths)) {
+  saveRDS(vst(dds, blind = FALSE), output_paths[["vst"]])
+}
 writeLines(capture.output(sessionInfo()), output_paths[["session_info"]])

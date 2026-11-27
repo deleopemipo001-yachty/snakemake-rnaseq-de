@@ -96,9 +96,14 @@ make_gene_sets <- function(data) {
   } else {
     as.character(data$gs_name)
   }
+  long_description <- description
+  description <- as.character(data$gs_name)
+  missing_long_description <- is.na(long_description) | long_description == ""
+  long_description[missing_long_description] <- description[missing_long_description]
   mapping <- data.frame(
     ID = term_id,
     Description = description,
+    Long_description = long_description,
     gene = as.character(data$analysis_gene_id),
     stringsAsFactors = FALSE
   )
@@ -116,6 +121,7 @@ empty_table <- function() {
   data.frame(
     ID = character(),
     Description = character(),
+    Long_description = character(),
     GeneRatio = character(),
     BgRatio = character(),
     pvalue = numeric(),
@@ -188,6 +194,7 @@ run_one <- function(collection, direction) {
       data.frame(
         ID = term_id,
         Description = term$Description[[1]],
+        Long_description = term$Long_description[[1]],
         GeneRatio = paste0(overlap_count, "/", number_tested),
         BgRatio = paste0(set_size, "/", number_universe),
         pvalue = pvalue,
@@ -212,7 +219,7 @@ run_one <- function(collection, direction) {
   if (nrow(tested_terms) > 0) {
     significant_results <- tested_terms[
       !is.na(tested_terms$p.adjust) & tested_terms$p.adjust < padj_threshold,
-      c("ID", "Description", "GeneRatio", "BgRatio", "pvalue", "p.adjust", "geneID", "Count"),
+      c("ID", "Description", "Long_description", "GeneRatio", "BgRatio", "pvalue", "p.adjust", "geneID", "Count"),
       drop = FALSE
     ]
   }

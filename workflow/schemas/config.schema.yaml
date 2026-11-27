@@ -102,6 +102,13 @@ properties:
       lfc:
         type: number
         minimum: 0
+      sensitivity_exclude_patients:
+        type: array
+        items:
+          type: string
+          minLength: 1
+          pattern: "^[A-Za-z0-9_.-]+$"
+        uniqueItems: true
     required:
       - counts
       - samples
@@ -113,6 +120,7 @@ properties:
       - min_samples
       - padj
       - lfc
+      - sensitivity_exclude_patients
     additionalProperties: false
   enrichment:
     type: object

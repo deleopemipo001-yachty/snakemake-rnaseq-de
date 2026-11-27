@@ -43,8 +43,66 @@ rule deseq2:
         min_samples=config["de"]["min_samples"],
         padj=config["de"]["padj"],
         lfc=config["de"]["lfc"],
+        exclude_patients=[],
     script:
         "../scripts/deseq2.R"
+
+
+# Refit the same paired model after removing configured whole patients.
+if sensitivity_excluded_patients:
+
+    rule deseq2_sensitivity:
+        input:
+            counts=config["de"]["counts"],
+            samples=config["de"]["samples"],
+            annotation=config["de"]["gene_annotation"],
+        output:
+            all_genes=f"{sensitivity_directory}/all_genes.tsv",
+            degs=f"{sensitivity_directory}/degs.tsv",
+            summary=f"{sensitivity_directory}/summary.tsv",
+            session_info=f"{sensitivity_directory}/session_info.txt",
+        log:
+            f"logs/deseq2_sensitivity/{sensitivity_label}.log",
+        conda:
+            "../envs/deseq2.yaml"
+        threads: 1
+        resources:
+            mem_mb=9000,
+        params:
+            patient_column=config["de"]["patient_column"],
+            condition_column=config["de"]["condition_column"],
+            reference=config["de"]["reference"],
+            min_count=config["de"]["min_count"],
+            min_samples=config["de"]["min_samples"],
+            padj=config["de"]["padj"],
+            lfc=config["de"]["lfc"],
+            exclude_patients=sensitivity_excluded_patients,
+        script:
+            "../scripts/deseq2.R"
+
+    # Compare the sensitivity results with the full analysis and plot fold-change agreement.
+    rule sensitivity_compare:
+        input:
+            full_all_genes="results/deseq2/all_genes.tsv",
+            full_degs="results/deseq2/degs.tsv",
+            sensitivity_all_genes=f"{sensitivity_directory}/all_genes.tsv",
+            sensitivity_degs=f"{sensitivity_directory}/degs.tsv",
+        output:
+            comparison=f"{sensitivity_directory}/comparison.tsv",
+            session_info=f"{sensitivity_directory}/comparison_session_info.txt",
+            plot_png=f"results/figures/sensitivity_lfc_{sensitivity_label}.png",
+            plot_pdf=f"results/figures/sensitivity_lfc_{sensitivity_label}.pdf",
+        log:
+            f"logs/deseq2_sensitivity/compare_{sensitivity_label}.log",
+        conda:
+            "../envs/deseq2.yaml"
+        threads: 1
+        resources:
+            mem_mb=2000,
+        params:
+            excluded_patients=sensitivity_excluded_patients,
+        script:
+            "../scripts/sensitivity_compare.R"
 
 
 # Make diagnostic plots that show sample relationships and the DE results.

@@ -26,6 +26,7 @@ de:
   min_samples: 3
   padj: 0.05
   lfc: 1
+  sensitivity_exclude_patients: []
 
 enrichment:
   padj: 0.05

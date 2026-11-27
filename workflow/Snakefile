@@ -2,6 +2,27 @@
 configfile: "config/config.yaml"
 
 
+sensitivity_excluded_patients = config["de"]["sensitivity_exclude_patients"]
+sensitivity_label = "_".join(sensitivity_excluded_patients)
+sensitivity_directory = f"results/deseq2_sensitivity/excl_{sensitivity_label}"
+sensitivity_targets = []
+if sensitivity_excluded_patients:
+    sensitivity_targets = [
+        f"{sensitivity_directory}/{name}"
+        for name in [
+            "all_genes.tsv",
+            "degs.tsv",
+            "summary.tsv",
+            "session_info.txt",
+            "comparison.tsv",
+            "comparison_session_info.txt",
+        ]
+    ] + [
+        f"results/figures/sensitivity_lfc_{sensitivity_label}.{extension}"
+        for extension in ["png", "pdf"]
+    ]
+
+
 include: "rules/common.smk"
 include: "rules/sra.smk"
 include: "rules/qc.smk"
@@ -51,3 +72,4 @@ rule all:
         ),
         "results/enrichment/versions.txt",
         "results/enrichment/session_info.txt",
+        sensitivity_targets,
