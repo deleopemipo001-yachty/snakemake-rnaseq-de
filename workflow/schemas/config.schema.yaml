@@ -140,26 +140,41 @@ properties:
   preprint:
     type: object
     properties:
-      fpkm: {type: string, minLength: 1}
-      series_matrix: {type: string, minLength: 1}
-      original_degs: {type: string, minLength: 1}
-      original_kegg: {type: string, minLength: 1}
+      fpkm: { type: string, minLength: 1 }
+      series_matrix: { type: string, minLength: 1 }
+      original_degs: { type: string, minLength: 1 }
+      original_kegg: { type: string, minLength: 1 }
       kegg_aliases:
         type: object
-        propertyNames: {type: string}
-        additionalProperties: {type: string, minLength: 1}
+        propertyNames: { type: string }
+        additionalProperties: { type: string, minLength: 1 }
       samples:
         type: array
         minItems: 1
-        items: {type: string, minLength: 1}
-      min_mean_log2: {type: number}
-      padj: {type: number, exclusiveMinimum: 0, maximum: 1}
-      lfc: {type: number, minimum: 0}
-      expected_genes: {type: integer, minimum: 0}
-      expected_degs: {type: integer, minimum: 0}
-      expected_up: {type: integer, minimum: 0}
-      expected_down: {type: integer, minimum: 0}
-    required: [fpkm, series_matrix, original_degs, original_kegg, kegg_aliases, samples, min_mean_log2, padj, lfc, expected_genes, expected_degs, expected_up, expected_down]
+        items: { type: string, minLength: 1 }
+      min_mean_log2: { type: number }
+      padj: { type: number, exclusiveMinimum: 0, maximum: 1 }
+      lfc: { type: number, minimum: 0 }
+      expected_genes: { type: integer, minimum: 0 }
+      expected_degs: { type: integer, minimum: 0 }
+      expected_up: { type: integer, minimum: 0 }
+      expected_down: { type: integer, minimum: 0 }
+    required:
+      [
+        fpkm,
+        series_matrix,
+        original_degs,
+        original_kegg,
+        kegg_aliases,
+        samples,
+        min_mean_log2,
+        padj,
+        lfc,
+        expected_genes,
+        expected_degs,
+        expected_up,
+        expected_down,
+      ]
     additionalProperties: false
 required: [sample_sheet, fastp, ref, featurecounts, de, enrichment, preprint]
 additionalProperties: false

@@ -40,7 +40,20 @@ preprint:
   original_kegg: "resources/preprint/KEGG_from_GEO_FPKM.csv" # Original KEGG table for descriptive comparison.
   kegg_aliases:
     "cell adhesion molecules": "KEGG_CELL_ADHESION_MOLECULES_CAMS" # KEGG renamed this pathway after the MSigDB legacy release.
-  samples: [RC1_N, RC1_T, RC2_N, RC2_T, RC3_N, RC3_T, RC4_N, RC4_T, RC5_N, RC5_T, RC6_N, RC6_T] # Explicit FPKM columns to reproduce.
+  samples: [
+      RC1_N,
+      RC1_T,
+      RC2_N,
+      RC2_T,
+      RC3_N,
+      RC3_T,
+      RC4_N,
+      RC4_T,
+      RC5_N,
+      RC5_T,
+      RC6_N,
+      RC6_T,
+    ] # Explicit FPKM columns to reproduce.
   min_mean_log2: 1 # Minimum mean log2(FPKM + 1) before duplicate IDs are collapsed.
   padj: 0.05 # Adjusted p-value threshold for reproduced DEGs.
   lfc: 1 # Absolute unshrunken log fold-change threshold for reproduced DEGs.
