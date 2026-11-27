@@ -8,6 +8,7 @@ include: "rules/qc.smk"
 include: "rules/ref.smk"
 include: "rules/align.smk"
 include: "rules/count.smk"
+include: "rules/deseq2.smk"
 
 
 # Build the requested MultiQC report from all configured samples.
@@ -18,3 +19,9 @@ rule all:
         "results/counts/counts.txt",
         "results/counts/counts_matrix.tsv",
         "results/qc/chrom_names.txt",
+        "results/deseq2/all_genes.tsv",
+        "results/deseq2/degs.tsv",
+        "results/deseq2/summary.tsv",
+        "results/deseq2/dds.rds",
+        "results/deseq2/vst.rds",
+        "results/deseq2/session_info.txt",

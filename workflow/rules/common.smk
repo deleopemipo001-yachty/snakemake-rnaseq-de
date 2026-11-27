@@ -10,6 +10,12 @@ for column in ["fq1", "fq2"]:
         samples[column] = ""
     samples[column] = samples[column].fillna("").str.strip()
 validate(samples, "../schemas/samples.schema.yaml")
+de_samples = pd.read_csv(config["de"]["samples"], sep="\t", dtype=str)
+for column in ["fq1", "fq2"]:
+    if column not in de_samples.columns:
+        de_samples[column] = ""
+    de_samples[column] = de_samples[column].fillna("").str.strip()
+validate(de_samples, "../schemas/samples.schema.yaml")
 partial_fastq_paths = samples["fq1"].ne("") != samples["fq2"].ne("")
 if partial_fastq_paths.any():
     invalid_samples = ", ".join(samples.loc[partial_fastq_paths, "sample"])

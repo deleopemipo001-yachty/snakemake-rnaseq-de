@@ -1,0 +1,7 @@
+sample	patient	condition	run	fq1	fq2
+SIM1_N	SIM1	normal	SIM1_N		
+SIM1_T	SIM1	tumor	SIM1_T		
+SIM2_N	SIM2	normal	SIM2_N		
+SIM2_T	SIM2	tumor	SIM2_T		
+SIM3_N	SIM3	normal	SIM3_N		
+SIM3_T	SIM3	tumor	SIM3_T		

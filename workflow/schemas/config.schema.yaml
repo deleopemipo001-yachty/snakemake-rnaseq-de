@@ -68,5 +68,51 @@ properties:
         enum: [0, 1, 2, null]
     required: [strandedness]
     additionalProperties: false
-required: [sample_sheet, fastp, ref, featurecounts]
+  de:
+    type: object
+    properties:
+      counts:
+        type: string
+        minLength: 1
+      samples:
+        type: string
+        minLength: 1
+      gene_annotation:
+        type: string
+        minLength: 1
+      patient_column:
+        type: string
+        minLength: 1
+      condition_column:
+        type: string
+        minLength: 1
+      reference:
+        type: string
+        enum: [normal]
+      min_count:
+        type: integer
+        minimum: 0
+      min_samples:
+        type: integer
+        minimum: 1
+      padj:
+        type: number
+        exclusiveMinimum: 0
+        maximum: 1
+      lfc:
+        type: number
+        minimum: 0
+    required:
+      - counts
+      - samples
+      - gene_annotation
+      - patient_column
+      - condition_column
+      - reference
+      - min_count
+      - min_samples
+      - padj
+      - lfc
+    additionalProperties: false
+required: [sample_sheet, fastp, ref, featurecounts, de]
 additionalProperties: false

@@ -14,3 +14,15 @@ ref:
 
 featurecounts:
   strandedness: 0 # test only
+
+de:
+  counts: "data/sim_counts_matrix.tsv"
+  samples: "data/sim_samples.tsv"
+  gene_annotation: "data/sim_gene_annotation.tsv"
+  patient_column: "patient"
+  condition_column: "condition"
+  reference: "normal"
+  min_count: 10
+  min_samples: 3
+  padj: 0.05
+  lfc: 1

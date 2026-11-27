@@ -13,3 +13,15 @@ ref:
 
 featurecounts:
   strandedness: 0 # Confirmed unstranded from RC1_T (SRR10733633): -s0 69.19%, -s1 43.70%, -s2 43.64%
+
+de:
+  counts: "results/counts/counts_matrix.tsv"
+  samples: "config/samples.tsv"
+  gene_annotation: "results/deseq2/gene_annotation.tsv"
+  patient_column: "patient"
+  condition_column: "condition"
+  reference: "normal"
+  min_count: 10
+  min_samples: 6
+  padj: 0.05
+  lfc: 1
