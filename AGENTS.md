@@ -46,6 +46,7 @@ or more than 10000 mem_mb for any rule.
 14. Reference files: URLs and versions live only in config. Downloads use curl with retries and
     resume (-C -) so an interrupted download continues instead of restarting. .test/ must never
     download the real reference; it uses a tiny local reference instead.
+15. After editing any YAML file (config, schema, envs, CI), format it with Prettier 3.8.4 (conda run -n prettier npx --yes prettier@3.8.4 --write <file>) before finishing.
     
 ## Confirmed scientific decisions (do not change without being told)
 - Library strandedness: 0 (unstranded), measured on RC1_T and RC1_N.
