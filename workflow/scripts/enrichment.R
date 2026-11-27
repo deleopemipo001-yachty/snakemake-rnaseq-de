@@ -162,10 +162,22 @@ run_one <- function(collection, direction) {
     msig[msig$gs_cat == "H", , drop = FALSE]
   }
   gene_sets <- make_gene_sets(category_data)
+  if (nrow(gene_sets) > 0) {
+    sizes <- vapply(
+      split(gene_sets$gene, gene_sets$ID),
+      function(genes) length(unique(genes)),
+      integer(1)
+    )
+    eligible_ids <- names(sizes)[
+      sizes >= minimum_set_size & sizes <= maximum_set_size
+    ]
+    gene_sets <- gene_sets[gene_sets$ID %in% eligible_ids, , drop = FALSE]
+  }
+  collection_universe <- intersect(universe, unique(gene_sets$gene))
   query <- unique(normalise_gene_id(degs$gene_id[degs$direction == direction]))
-  query <- intersect(query[!is.na(query) & query != ""], universe)
+  query <- intersect(query[!is.na(query) & query != ""], collection_universe)
   number_tested <- length(query)
-  number_universe <- length(universe)
+  number_universe <- length(collection_universe)
 
   tested_terms <- data.frame()
   if (number_tested > 0 && nrow(gene_sets) > 0) {
@@ -174,11 +186,11 @@ run_one <- function(collection, direction) {
       term <- gene_sets[gene_sets$ID == term_id, , drop = FALSE]
       term_genes <- unique(term$gene)
       set_size <- length(term_genes)
-      if (set_size < minimum_set_size || set_size > maximum_set_size) {
-        return(NULL)
-      }
       overlap <- intersect(query, term_genes)
       overlap_count <- length(overlap)
+      if (overlap_count == 0) {
+        return(NULL)
+      }
       pvalue <- stats::phyper(
         overlap_count - 1,
         set_size,
@@ -237,7 +249,9 @@ run_one <- function(collection, direction) {
   plot_name <- paste0(collection, "_", direction)
   png_path <- snakemake@output[[paste0(plot_name, "_png")]]
   pdf_path <- snakemake@output[[paste0(plot_name, "_pdf")]]
-  title <- paste(tools::toTitleCase(collection), direction, "regulated pathways")
+  collection_title <- if (collection == "kegg") "KEGG" else "Hallmark"
+  direction_title <- if (direction == "up") "up-regulated" else "down-regulated"
+  title <- paste(collection_title, direction_title, "pathways")
   if (nrow(significant_results) == 0) {
     plot <- ggplot2::ggplot() +
       ggplot2::annotate("text", x = 0, y = 0, label = "No significant terms", size = 6) +
