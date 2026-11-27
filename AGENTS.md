@@ -46,3 +46,22 @@ or more than 10000 mem_mb for any rule.
 14. Reference files: URLs and versions live only in config. Downloads use curl with retries and
     resume (-C -) so an interrupted download continues instead of restarting. .test/ must never
     download the real reference; it uses a tiny local reference instead.
+    
+## Confirmed scientific decisions (do not change without being told)
+- Library strandedness: 0 (unstranded), measured on RC1_T and RC1_N.
+- Reference: HISAT2 prebuilt GRCh38 index (Ensembl-based) + Ensembl 116 GTF.
+- DESeq2 design: ~ patient + condition; reference level "normal"; contrast tumor vs normal.
+- Low-count filter: >= 10 reads in >= 6 samples (min_samples is a config value).
+- Significant DEG: padj (BH) < 0.05 and |log2FoldChange| >= 1, using the unshrunken log2FC.
+- Shrunken log2FC (apeglm) is reported alongside, and used for ranking and the MA plot.
+- Gene names and biotypes come from the same Ensembl GTF used for counting.
+- Enrichment: offline, pinned gene sets (msigdbr: KEGG + Hallmark), up and down tested
+  separately, universe = all genes tested.
+
+## Rules for R scripts
+- Match count-matrix columns to the sample sheet BY NAME, never by position; stop with a
+  clear error if any sample is missing or extra.
+- Set a fixed random seed. No internet access at run time.
+- Write sessionInfo() to the results folder.
+- Read all thresholds from config; never hard-code them.
+- Save every figure as both PNG (300 dpi) and PDF.
