@@ -1,0 +1,8 @@
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - r-base=4.3.3
+  - r-msigdbr=7.5.1
+  - r-ggplot2=3.5.1
+  - r-dplyr=1.1.4

@@ -114,5 +114,20 @@ properties:
       - padj
       - lfc
     additionalProperties: false
-required: [sample_sheet, fastp, ref, featurecounts, de]
+  enrichment:
+    type: object
+    properties:
+      padj:
+        type: number
+        exclusiveMinimum: 0
+        maximum: 1
+      min_size:
+        type: integer
+        minimum: 1
+      max_size:
+        type: integer
+        minimum: 1
+    required: [padj, min_size, max_size]
+    additionalProperties: false
+required: [sample_sheet, fastp, ref, featurecounts, de, enrichment]
 additionalProperties: false

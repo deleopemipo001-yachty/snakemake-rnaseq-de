@@ -9,6 +9,7 @@ include: "rules/ref.smk"
 include: "rules/align.smk"
 include: "rules/count.smk"
 include: "rules/deseq2.smk"
+include: "rules/enrichment.smk"
 
 
 # Build the requested MultiQC report from all configured samples.
@@ -37,3 +38,16 @@ rule all:
             ],
             extension=["png", "pdf"],
         ),
+        expand(
+            "results/enrichment/{collection}_{direction}.tsv",
+            collection=["kegg", "hallmark"],
+            direction=["up", "down"],
+        ),
+        expand(
+            "results/figures/enrichment_{collection}_{direction}.{extension}",
+            collection=["kegg", "hallmark"],
+            direction=["up", "down"],
+            extension=["png", "pdf"],
+        ),
+        "results/enrichment/versions.txt",
+        "results/enrichment/session_info.txt",

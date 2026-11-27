@@ -26,3 +26,8 @@ de:
   min_samples: 3
   padj: 0.05
   lfc: 1
+
+enrichment:
+  padj: 0.05
+  min_size: 10
+  max_size: 500
